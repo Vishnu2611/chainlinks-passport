@@ -1,0 +1,171 @@
+Organizations:
+
+    - &OrdererOrg
+        Name: OrdererOrg
+        ID: OrdererMSP
+        MSPDir: crypto-config/ordererOrganizations/chainlinks.com/msp
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('OrdererMSP.member')"
+            Writers:
+                Type: Signature
+                Rule: "OR('OrdererMSP.member')"
+            Admins:
+                Type: Signature
+                Rule: "OR('OrdererMSP.admin')"
+
+    - &Org1
+        Name: PassportsevaMSP
+        ID: PassportsevaMSP
+        MSPDir: crypto-config/peerOrganizations/passportseva.chainlinks.com/msp
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('PassportsevaMSP.admin', 'PassportsevaMSP.peer', 'PassportsevaMSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('PassportsevaMSP.admin', 'PassportsevaMSP.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('PassportsevaMSP.admin')"
+        AnchorPeers:
+            - Host: peer0.passportseva.chainlinks.com
+              Port: 7051
+
+    - &Org2
+        Name: PoliceMSP
+        ID: PoliceMSP
+        MSPDir: crypto-config/peerOrganizations/police.chainlinks.com/msp
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('PoliceMSP.admin', 'PoliceMSP.peer', 'PoliceMSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('PoliceMSP.admin', 'PoliceMSP.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('PoliceMSP.admin')"
+
+        AnchorPeers:
+            - Host: peer0.police.chainlinks.com
+              Port: 9051
+
+    - &Org3
+        Name: AirportMSP
+        ID: AirportMSP
+        MSPDir: crypto-config/peerOrganizations/airport.chainlinks.com/msp
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('AirportMSP.admin', 'AirportMSP.peer', 'AirportMSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('AirportMSP.admin', 'AirportMSP.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('AirportMSP.admin')"
+
+        AnchorPeers:
+            - Host: peer0.airport.chainlinks.com
+              Port: 11051
+Capabilities:
+    Channel: &ChannelCapabilities
+        V1_4_3: true
+        V1_3: false
+        V1_1: false
+
+    Orderer: &OrdererCapabilities
+        V1_4_2: true
+        V1_1: false
+
+    Application: &ApplicationCapabilities
+        V1_4_2: true
+        V1_3: false
+        V1_2: false
+        V1_1: false
+
+Application: &ApplicationDefaults
+    Organizations:
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+
+    Capabilities:
+        <<: *ApplicationCapabilities
+
+Orderer: &OrdererDefaults
+
+    OrdererType: solo
+    Addresses:
+        - orderer.chainlinks.com:7050
+    BatchTimeout: 2s
+    BatchSize:
+        MaxMessageCount: 10
+        AbsoluteMaxBytes: 99 MB
+        PreferredMaxBytes: 512 KB
+    Organizations:
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+        BlockValidation:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+
+Channel: &ChannelDefaults
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+
+    Capabilities:
+        <<: *ChannelCapabilities
+
+Profiles:
+
+    ChainlinksGenesis:
+        <<: *ChannelDefaults
+        Orderer:
+            <<: *OrdererDefaults
+            Organizations:
+                - *OrdererOrg
+            Capabilities:
+                <<: *OrdererCapabilities
+        Consortiums:
+            SampleConsortium:
+                Organizations:
+                    - *Org1
+                    - *Org2
+                    - *Org3
+    Chainlinks_Channel:
+        Consortium: SampleConsortium
+        <<: *ChannelDefaults
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *Org1
+                - *Org2
+                - *Org3
+            Capabilities:
+                <<: *ApplicationCapabilities
