@@ -2,6 +2,9 @@ version: '2'
 
 volumes:
   orderer.chainlinks.com:
+  ca.passportseva.chainlinks.com:
+  ca.police.chainlinks.com:
+  ca.airport.chainlinks.com:
   peer0.passportseva.chainlinks.com:
   peer1.passportseva.chainlinks.com:
   peer0.police.chainlinks.com:
@@ -28,6 +31,24 @@ services:
     extends:
       file:  base/docker-compose-base.yaml
       service: peer0.passportseva.chainlinks.com
+    environment:
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=passportsevacouchdb0:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
+    depends_on:
+      - passportsevacouchdb0
+    networks:
+      - chain
+
+  passportsevacouchdb0:
+    container_name: passportsevacouchdb0
+    image: hyperledger/fabric-couchdb
+    environment:
+      - COUCHDB_USER=
+      - COUCHDB_PASSWORD=
+    ports:
+      - 5984:5984
     networks:
       - chain
 
@@ -36,6 +57,24 @@ services:
     extends:
       file:  base/docker-compose-base.yaml
       service: peer1.passportseva.chainlinks.com
+    environment:
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=passportsevacouchdb1:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
+    depends_on:
+      - passportsevacouchdb1
+    networks:
+      - chain
+
+  passportsevacouchdb1:
+    container_name: passportsevacouchdb1
+    image: hyperledger/fabric-couchdb
+    environment:
+      - COUCHDB_USER=
+      - COUCHDB_PASSWORD=
+    ports:
+      - 6984:5984
     networks:
       - chain
 
@@ -44,6 +83,24 @@ services:
     extends:
       file:  base/docker-compose-base.yaml
       service: peer0.police.chainlinks.com
+    environment:
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=policecouchdb0:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
+    depends_on:
+      - policecouchdb0
+    networks:
+      - chain
+
+  policecouchdb0:
+    container_name: policecouchdb0
+    image: hyperledger/fabric-couchdb
+    environment:
+      - COUCHDB_USER=
+      - COUCHDB_PASSWORD=
+    ports:
+      - 7984:5984
     networks:
       - chain
 
@@ -52,6 +109,24 @@ services:
     extends:
       file:  base/docker-compose-base.yaml
       service: peer1.police.chainlinks.com
+    environment:
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=policecouchdb1:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
+    depends_on:
+      - policecouchdb1
+    networks:
+      - chain
+
+  policecouchdb1:
+    container_name: policecouchdb1
+    image: hyperledger/fabric-couchdb
+    environment:
+      - COUCHDB_USER=
+      - COUCHDB_PASSWORD=
+    ports:
+      - 8984:5984
     networks:
       - chain
 
@@ -60,6 +135,24 @@ services:
     extends:
       file:  base/docker-compose-base.yaml
       service: peer0.airport.chainlinks.com
+    environment:
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=airportcouchdb0:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
+    depends_on:
+      - airportcouchdb0
+    networks:
+      - chain
+
+  airportcouchdb0:
+    container_name: airportcouchdb0
+    image: hyperledger/fabric-couchdb
+    environment:
+      - COUCHDB_USER=
+      - COUCHDB_PASSWORD=
+    ports:
+      - 9984:5984
     networks:
       - chain
 
@@ -68,6 +161,24 @@ services:
     extends:
       file:  base/docker-compose-base.yaml
       service: peer1.airport.chainlinks.com
+    environment:
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=airportcouchdb1:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
+    depends_on:
+      - airportcouchdb1
+    networks:
+      - chain
+
+  airportcouchdb1:
+    container_name: airportcouchdb1
+    image: hyperledger/fabric-couchdb
+    environment:
+      - COUCHDB_USER=
+      - COUCHDB_PASSWORD=
+    ports:
+      - 10984:5984
     networks:
       - chain
 
@@ -105,5 +216,62 @@ services:
       - peer1.police.chainlinks.com
       - peer0.airport.chainlinks.com
       - peer1.airport.chainlinks.com
+    networks:
+      - chain
+
+  ca.passportseva.chainlinks.com:
+    image: hyperledger/fabric-ca:$IMAGE_TAG
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-passportseva
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.passportseva.chainlinks.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/d5cd9d8ff5c4f1ede940e232dc2bf88260b2be71b0de4921bdcef58a4602cb7d_sk
+      - FABRIC_CA_SERVER_PORT=7054
+    ports:
+      - 7054:7054
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.passportseva.chainlinks.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/d5cd9d8ff5c4f1ede940e232dc2bf88260b2be71b0de4921bdcef58a4602cb7d_sk -b admin:adminpw -d'
+    volumes:
+      - ./fabric-ca-server-config.yaml:/etc/hyperledger/fabric-ca-server/fabric-ca-server-config.yaml
+      - ./crypto-config/peerOrganizations/passportseva.chainlinks.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca_passportseva
+    networks:
+      - chain
+
+  ca.police.chainlinks.com:
+    image: hyperledger/fabric-ca:$IMAGE_TAG
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-police
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.police.chainlinks.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/21ecaeaaca27c9853d433b2c96007257ca92bbf3bb513e6240af6a8043b7a69a_sk
+      - FABRIC_CA_SERVER_PORT=8054
+    ports:
+      - 8054:8054
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.police.chainlinks.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/21ecaeaaca27c9853d433b2c96007257ca92bbf3bb513e6240af6a8043b7a69a_sk -b admin:adminpw -d'
+    volumes:
+      - ./fabric-ca-server-config.yaml:/etc/hyperledger/fabric-ca-server/fabric-ca-server-config.yaml
+      - ./crypto-config/peerOrganizations/police.chainlinks.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca_police
+    networks:
+      - chain
+
+  ca.airport.chainlinks.com:
+    image: hyperledger/fabric-ca:$IMAGE_TAG
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-airport
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.airport.chainlinks.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/e376311130bcde14ccfd4c04f3bd5d241048acb348676569bf54315544756ab7_sk
+      - FABRIC_CA_SERVER_PORT=9054
+    ports:
+      - 9054:9054
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.airport.chainlinks.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/e376311130bcde14ccfd4c04f3bd5d241048acb348676569bf54315544756ab7_sk -b admin:adminpw -d'
+    volumes:
+      - ./fabric-ca-server-config.yaml:/etc/hyperledger/fabric-ca-server/fabric-ca-server-config.yaml
+      - ./crypto-config/peerOrganizations/airport.chainlinks.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca_airport
     networks:
       - chain
