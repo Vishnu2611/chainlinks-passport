@@ -1,7 +1,7 @@
 {
-    "name": "chainlinks",
+    "name": "ordermanagement",
     "version": "1.0.0",
-    "description": "chainlinks contract implemented in JavaScript",
+    "description": "ordermanagement contract implemented in JavaScript",
     "main": "index.js",
     "engines": {
         "node": ">=8",
